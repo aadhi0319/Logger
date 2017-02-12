@@ -23,7 +23,7 @@ A logger that decrypts chrome usernames and passwords saved on the computer and 
 
 **Step 10:** Watch this [short video](https://www.temboo.com/videos#oauthchoreos) to configure temboo.
 
-**Step 11:** Configure the test runner in the video to generate java code by clicking near the top.
+**Step 11:** Configure the test runner in the video to generate java code by clicking Java from the dropdown near the top.
 
 **Step 12:** Once this code has been generated, replace lines 140-158 in Logger.java with this auto-generated code.
 
