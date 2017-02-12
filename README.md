@@ -3,7 +3,7 @@ A logger that decrypts chrome usernames and passwords saved on the computer and 
 
 # Instructions
 
-**Step 1:** Create a DropBox account: https://www.dropbox.com/register
+- [ ] **Step 1:** Create a DropBox account: https://www.dropbox.com/register
 
 **Step 2:** Create a new app: https://www.dropbox.com/developers/apps/create
 
