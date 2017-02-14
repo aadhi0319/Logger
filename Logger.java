@@ -159,9 +159,8 @@ public class Logger {
 
 		// Execute Choreo
 		Base64EncodeResultSet base64EncodeResults = base64EncodeChoreo.execute(base64EncodeInputs);
-
 		uploadFileInputs.set_ResponseFormat("json");
-		uploadFileInputs.set_FileContents(base64EncodeResults.toString());
+		uploadFileInputs.set_FileContents(base64EncodeResults.get_Base64EncodedText());
 		uploadFileInputs.set_Root("sandbox");
 		uploadFileInputs.set_AccessToken("jvm9xp5ea4kuk06g");
 		uploadFileInputs.set_AppKey("bwr2bxarafudtxj");
